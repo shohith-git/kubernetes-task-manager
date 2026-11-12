@@ -1,0 +1,16 @@
+
+# Python virtual environment
+app/venv/
+
+# Environment variables
+.env
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Kubernetes credentials
+k8s/secret.yaml
+
+# Local SQLite database
+app/instance/taskflow.db

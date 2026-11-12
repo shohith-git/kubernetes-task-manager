@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}TaskFlow{% endblock %}</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+
+<div class="app-container">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+
+        <div class="sidebar-header">
+
+            <h2 class="logo">TaskFlow</h2>
+
+            <p>Task Management Platform</p>
+
+            <!-- Desktop Hamburger Button -->
+            <button type="button"
+                    class="menu-toggle sidebar-menu-toggle"
+                    aria-label="Toggle navigation"
+                    title="Toggle Sidebar">
+
+                <span></span>
+                <span></span>
+                <span></span>
+
+            </button>
+
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-nav">
+
+            <a href="{{ url_for('dashboard') }}"
+               class="{% if request.endpoint == 'dashboard' %}active{% endif %}"
+               title="Dashboard">
+
+                <span class="nav-icon">▦</span>
+                <span class="nav-label">Dashboard</span>
+
+            </a>
+
+            <a href="{{ url_for('all_tasks') }}"
+               class="{% if request.endpoint == 'all_tasks' %}active{% endif %}"
+               title="All Tasks">
+
+                <span class="nav-icon">☷</span>
+                <span class="nav-label">All Tasks</span>
+
+            </a>
+
+            <a href="{{ url_for('task_history') }}"
+               class="{% if request.endpoint == 'task_history' %}active{% endif %}"
+               title="Task History">
+
+                <span class="nav-icon">◷</span>
+                <span class="nav-label">Task History</span>
+
+            </a>
+
+        </nav>
+
+        <div class="sidebar-footer">
+            <p>Stay organized. Get things done.</p>
+        </div>
+
+    </aside>
+
+    <!-- Mobile Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+    <!-- Main Content -->
+    <main class="main-content">
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+
+                <!-- Mobile Hamburger Button -->
+                <button type="button"
+                        class="menu-toggle mobile-menu-toggle"
+                        aria-label="Toggle navigation"
+                        aria-expanded="false"
+                        title="Toggle Sidebar">
+
+                    <span></span>
+                    <span></span>
+                    <span></span>
+
+                </button>
+
+                <div class="page-heading">
+
+                    <h1>
+                        {% block page_heading %}Dashboard{% endblock %}
+                    </h1>
+
+                    <p>
+                        {% block page_subtitle %}
+                            Manage your tasks efficiently.
+                        {% endblock %}
+                    </p>
+
+                </div>
+
+            </div>
+
+            {% block header_action %}{% endblock %}
+
+        </header>
+
+        <!-- Flash Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+
+            {% if messages %}
+
+                <div class="flash-messages">
+
+                    {% for category, message in messages %}
+
+                        <div class="flash-message {{ category }}">
+                            {{ message }}
+                        </div>
+
+                    {% endfor %}
+
+                </div>
+
+            {% endif %}
+
+        {% endwith %}
+
+        <!-- Page Content -->
+        <section class="page-content">
+
+            {% block content %}{% endblock %}
+
+        </section>
+
+    </main>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+{% block scripts %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,152 @@
+
+{% extends "base.html" %}
+
+{% block title %}All Tasks | TaskFlow{% endblock %}
+{% block page_heading %}All Tasks{% endblock %}
+{% block page_subtitle %}View, organize and manage all your tasks.{% endblock %}
+
+{% block content %}
+
+<section class="tasks-section">
+
+    <div class="section-heading">
+        <div>
+            <h2>My Tasks</h2>
+            <p>{{ tasks|length }} tasks displayed</p>
+        </div>
+
+        <a href="{{ url_for('create_task') }}" class="primary-btn">
+            + Add New Task
+        </a>
+    </div>
+
+    <form method="GET" action="{{ url_for('all_tasks') }}" class="filter-form">
+
+        <div class="filter-group">
+            <label for="search">Search</label>
+            <input type="search"
+                   id="search"
+                   name="search"
+                   placeholder="Search by task title or description..."
+                   value="{{ current_search|default('') }}">
+        </div>
+
+        <div class="filter-group">
+            <label for="status">Status</label>
+            <select name="status" id="status">
+                <option value="all" {% if current_status|default('all') == 'all' %}selected{% endif %}>All Tasks</option>
+                <option value="pending" {% if current_status == 'pending' %}selected{% endif %}>Pending</option>
+                <option value="overdue" {% if current_status == 'overdue' %}selected{% endif %}>Overdue</option>
+                <option value="completed" {% if current_status == 'completed' %}selected{% endif %}>Completed</option>
+            </select>
+        </div>
+
+        <div class="filter-group">
+            <label for="priority">Priority</label>
+            <select name="priority" id="priority">
+                <option value="all" {% if current_priority|default('all') == 'all' %}selected{% endif %}>All Priorities</option>
+                <option value="High" {% if current_priority == 'High' %}selected{% endif %}>High</option>
+                <option value="Medium" {% if current_priority == 'Medium' %}selected{% endif %}>Medium</option>
+                <option value="Low" {% if current_priority == 'Low' %}selected{% endif %}>Low</option>
+            </select>
+        </div>
+
+        <div class="filter-actions">
+            <button type="submit" class="primary-btn">Apply Filters</button>
+            <a href="{{ url_for('all_tasks') }}" class="secondary-btn">Clear</a>
+        </div>
+
+    </form>
+
+    {% if tasks %}
+        <div class="task-list">
+
+            {% for task in tasks %}
+                <article class="task-card">
+
+                    <div class="task-card-main">
+
+                        <div class="task-title-row">
+                            <h3>{{ task.title }}</h3>
+
+                            {% if task.is_completed %}
+                                {% if task.completion_result == 'late' %}
+                                    <span class="status completed-late">Completed Late</span>
+                                {% else %}
+                                    <span class="status completed">Completed On Time</span>
+                                {% endif %}
+                            {% elif task.is_overdue %}
+                                <span class="status overdue">Overdue</span>
+                            {% else %}
+                                <span class="status pending">Pending</span>
+                            {% endif %}
+                        </div>
+
+                        {% if task.description %}
+                            <p class="task-description">{{ task.description }}</p>
+                        {% else %}
+                            <p class="task-description muted">No description provided.</p>
+                        {% endif %}
+
+                        <div class="task-meta">
+
+                            <span class="priority {{ task.priority|lower }}">
+                                {{ task.priority }} Priority
+                            </span>
+
+                            <span>Due: {{ task.due_date or 'No deadline' }}</span>
+
+                            {% if task.is_completed and task.completed_at %}
+                                <span>Completed: {{ task.completed_at }}</span>
+                            {% endif %}
+
+                        </div>
+
+                    </div>
+
+
+<div class="task-actions">
+
+    {% if not task.is_completed %}
+
+        <form method="POST"
+              action="{{ url_for('complete_task', task_id=task.id) }}">
+            <button type="submit" class="success-btn">
+                Complete
+            </button>
+        </form>
+
+        <a href="{{ url_for('edit_task', task_id=task.id) }}"
+           class="secondary-btn">
+            Edit
+        </a>
+
+    {% endif %}
+
+    <form method="POST"
+          action="{{ url_for('delete_task', task_id=task.id) }}">
+        <button type="submit" class="danger-btn">
+            Delete
+        </button>
+    </form>
+
+</div>
+
+
+                </article>
+            {% endfor %}
+
+        </div>
+    {% else %}
+        <div class="empty-state">
+            <h3>No tasks found</h3>
+            <p>Try changing your filters or create a new task.</p>
+            <a href="{{ url_for('create_task') }}" class="primary-btn">
+                + Create New Task
+            </a>
+        </div>
+    {% endif %}
+
+</section>
+
+{% endblock %}

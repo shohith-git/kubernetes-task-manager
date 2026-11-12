@@ -1,0 +1,110 @@
+
+{% extends "base.html" %}
+
+{% set editing = task is defined and task %}
+{% block title %}{% if editing %}Edit Task{% else %}Create Task{% endif %} | TaskFlow{% endblock %}
+{% block page_heading %}{% if editing %}Edit Task{% else %}Create New Task{% endif %}{% endblock %}
+{% block page_subtitle %}{% if editing %}Update your task details below.{% else %}Add a new task and organize your work.{% endif %}{% endblock %}
+
+{% block content %}
+
+<section class="task-form-container">
+
+    <div class="form-card">
+
+        <div class="form-card-header">
+            <h2>{% if editing %}Update Task{% else %}New Task Details{% endif %}</h2>
+            <p>Fill in the information for your task.</p>
+        </div>
+
+        <form method="POST"
+              action="{% if editing %}{{ url_for('update_task', task_id=task.id) }}{% else %}{{ url_for('create_task') }}{% endif %}"
+              class="task-form">
+
+            <div class="form-group">
+                <label for="title">Task Title <span>*</span></label>
+                <input
+                    type="text"
+                    id="title"
+                    name="title"
+                    placeholder="Enter your task title"
+                    value="{{ task.title if editing else '' }}"
+                    maxlength="150"
+                    required>
+            </div>
+
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea
+                    id="description"
+                    name="description"
+                    rows="5"
+                    placeholder="Add details about what needs to be done...">{{ task.description if editing else '' }}</textarea>
+            </div>
+
+            <div class="form-row">
+
+                <div class="form-group">
+                    <label for="due_date">Due Date</label>
+                    <input
+                        type="date"
+                        id="due_date"
+                        name="due_date"
+                        value="{{ task.due_date if editing and task.due_date else '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="priority">Priority</label>
+                    <select id="priority" name="priority">
+                        <option value="Low"
+                            {% if editing and task.priority == 'Low' %}selected{% endif %}>
+                            Low
+                        </option>
+
+                        <option value="Medium"
+                            {% if not editing or task.priority == 'Medium' %}selected{% endif %}>
+                            Medium
+                        </option>
+
+                        <option value="High"
+                            {% if editing and task.priority == 'High' %}selected{% endif %}>
+                            High
+                        </option>
+                    </select>
+                </div>
+
+            </div>
+
+            {% if editing and task.is_completed %}
+                <div class="form-group">
+                    <label>Completion Status</label>
+                    <div class="status-display">
+                        {% if task.completion_result == 'late' %}
+                            <span class="status completed-late">Completed Late</span>
+                        {% else %}
+                            <span class="status completed">Completed On Time</span>
+                        {% endif %}
+                    </div>
+                    <small>Completed task status is retained while editing.</small>
+                </div>
+            {% endif %}
+
+            <div class="form-actions">
+
+                <button type="submit" class="primary-btn">
+                    {% if editing %}Save Changes{% else %}Create Task{% endif %}
+                </button>
+
+                <a href="{{ url_for('all_tasks') }}" class="secondary-btn">
+                    Cancel
+                </a>
+
+            </div>
+
+        </form>
+
+    </div>
+
+</section>
+
+{% endblock %}

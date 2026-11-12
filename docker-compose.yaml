@@ -1,0 +1,42 @@
+services:
+  web:
+    build: .
+    ports:
+      - "5000:5000"
+    networks:
+      - tf-network
+    environment:
+      DATABASE_URL: postgresql+psycopg2://taskflow_user:TaskFlowDev%402026@db:5432/taskflow_db
+      SECRET_KEY: taskflow-development-key
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: taskflow_db
+      POSTGRES_USER: taskflow_user
+      POSTGRES_PASSWORD: TaskFlowDev@2026
+    ports:
+      - "5432:5432"
+    volumes:
+      - taskflow-postgres-data:/var/lib/postgresql/data
+    networks:
+      - tf-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U taskflow_user -d taskflow_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+
+volumes:
+  taskflow-postgres-data:
+    external: true
+    name: taskflow-postgres-data
+
+networks:
+  tf-network:
+    name: tf-network
+    driver: bridge

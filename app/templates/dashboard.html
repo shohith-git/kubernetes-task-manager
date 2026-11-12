@@ -1,0 +1,116 @@
+
+{% extends "base.html" %}
+
+{% block title %}Dashboard | TaskFlow{% endblock %}
+{% block page_heading %}Dashboard{% endblock %}
+{% block page_subtitle %}Here's an overview of your productivity.{% endblock %}
+
+{% block header_action %}
+<a href="{{ url_for('create_task') }}" class="primary-btn">
+    + Create New Task
+</a>
+{% endblock %}
+
+{% block content %}
+
+<!-- Dashboard Statistics -->
+<section class="stats-container">
+
+    <div class="stat-card">
+        <span>Total Tasks</span>
+        <h2>{{ total_tasks|default(0) }}</h2>
+        <small>All created tasks</small>
+    </div>
+
+    <div class="stat-card">
+        <span>Pending</span>
+        <h2>{{ pending_tasks|default(0) }}</h2>
+        <small>Tasks within deadline</small>
+    </div>
+
+    <div class="stat-card">
+        <span>Overdue</span>
+        <h2>{{ overdue_tasks_count|default(0) }}</h2>
+        <small>Tasks past their deadline</small>
+    </div>
+
+    <div class="stat-card">
+        <span>Completed</span>
+        <h2>{{ completed_tasks_count|default(0) }}</h2>
+        <small>Finished tasks</small>
+    </div>
+
+</section>
+
+<!-- Overdue Tasks -->
+<section class="dashboard-section">
+
+    <div class="section-heading">
+        <div>
+            <h2>Overdue Tasks</h2>
+            <p>Tasks that are still pending after their deadlines.</p>
+        </div>
+
+        <a href="{{ url_for('all_tasks', status='overdue') }}"
+           class="text-link">
+            View all
+        </a>
+    </div>
+
+    {% if overdue_tasks %}
+
+        <div class="task-list">
+
+            {% for task in overdue_tasks %}
+
+                <article class="task-card">
+
+                    <div class="task-card-main">
+
+                        <h3>{{ task.title }}</h3>
+
+                        {% if task.description %}
+                            <p>{{ task.description }}</p>
+                        {% endif %}
+
+                        <div class="task-meta">
+
+                            <span class="priority {{ task.priority|lower }}">
+                                {{ task.priority }} Priority
+                            </span>
+
+                            <span class="status overdue">
+                                Overdue
+                            </span>
+
+                            <span>Due: {{ task.due_date }}</span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="task-actions">
+                        <a href="{{ url_for('edit_task', task_id=task.id) }}"
+                           class="secondary-btn">
+                            Edit
+                        </a>
+                    </div>
+
+                </article>
+
+            {% endfor %}
+
+        </div>
+
+    {% else %}
+
+        <div class="empty-state">
+            <h3>No overdue tasks</h3>
+            <p>You're all caught up with your deadlines.</p>
+        </div>
+
+    {% endif %}
+
+</section>
+
+{% endblock %}

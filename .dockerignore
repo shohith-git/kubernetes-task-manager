@@ -1,0 +1,12 @@
+.env
+
+/venv
+
+/instance
+
+start-cmd.bat
+
+__pycache__/
+*.py[cod]
+.git/
+.gitignore
